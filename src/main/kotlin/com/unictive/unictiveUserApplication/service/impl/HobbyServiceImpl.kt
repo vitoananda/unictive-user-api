@@ -14,12 +14,9 @@ import org.springframework.stereotype.Service
 class HobbyServiceImpl(
     private val hobbyRepository: HobbyRepository,
 ) : HobbyService {
-    override fun createHobby(request: ReqInsertHobbyDto): BaseResponse<Any> {
-        val hobby = HobbyEntity(
-            name = request.name,
-        )
-        hobbyRepository.save(hobby)
-        return BaseResponse(message = ConstantVariables.INSERT_DATA_SUCCESS.format("Hobby"))
+    override fun getListHobby(): BaseResponse<List<HobbyEntity>> {
+        val hobbies = hobbyRepository.findAll()
+        return BaseResponse(data = hobbies)
     }
 
 }
