@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/unictive-db?CurrentSchema=public
+    username: postgres
+    password: vand0507
+    driver-class-name: org.postgresql.Driver
+    maximumPoolSize : 10
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
