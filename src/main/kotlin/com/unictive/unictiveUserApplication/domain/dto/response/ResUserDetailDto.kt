@@ -6,5 +6,5 @@ data class ResUserDetailDto(
     val idUser: Int? = null,
     val name: String? = null,
     val email: String? = null,
-    val hobbies: List<HobbyEntity>? = null
+    val hobbies: List<String>? = null
 )

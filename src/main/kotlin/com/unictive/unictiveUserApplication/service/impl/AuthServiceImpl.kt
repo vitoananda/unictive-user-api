@@ -1,8 +1,8 @@
 package com.unictive.unictiveUserApplication.service.impl
 
-import com.unictive.unictiveUserApplication.domain.common.StatusCode
 import com.unictive.unictiveUserApplication.domain.constant.ConstantVariables
-import com.unictive.unictiveUserApplication.domain.dto.request.ReqEmailPasswordDto
+import com.unictive.unictiveUserApplication.domain.dto.request.ReqLoginDto
+import com.unictive.unictiveUserApplication.domain.dto.request.ReqRegisterDto
 import com.unictive.unictiveUserApplication.domain.dto.response.BaseResponse
 import com.unictive.unictiveUserApplication.domain.dto.response.ResLoginDto
 import com.unictive.unictiveUserApplication.domain.entity.UserEntity
@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service
 class AuthServiceImpl(
     private val userRepository: UserRepository
 ) : AuthService {
-    override fun userRegister(request: ReqEmailPasswordDto): BaseResponse<Any> {
+    override fun userRegister(request: ReqRegisterDto): BaseResponse<Any> {
         val existingUser = userRepository.findByEmailAndPassword(request.email, request.password)
         if (existingUser != null) {
             throw ConflictDataException(ConstantVariables.DATA_ALREADY_EXIST.format("User"))
         }
         val user = UserEntity(
+            name = request.name,
             email = request.email,
             password = request.password
         )
@@ -33,7 +34,7 @@ class AuthServiceImpl(
         )
     }
 
-    override fun userLogin(request: ReqEmailPasswordDto): BaseResponse<Any> {
+    override fun userLogin(request: ReqLoginDto): BaseResponse<Any> {
         val user = userRepository.findByEmailAndPassword(
             request.email,
             request.password

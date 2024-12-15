@@ -17,7 +17,7 @@ import com.unictive.unictiveUserApplication.exception.UnauthorizedException
 
 @Component
 class JWTFilter(
-    private val jwtUtils: JWTUtils // Inject your JWTUtils
+    private val jwtUtils: JWTUtils
 ) : OncePerRequestFilter() {
 
     private val objectMapper = ObjectMapper()
@@ -27,8 +27,14 @@ class JWTFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        val requestPath = request.requestURI
+        if (requestPath.startsWith("/v1/api/auth/register") || requestPath.startsWith("/v1/api/auth/login")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val authorizationHeader = request.getHeader("Authorization")
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
             val token = authorizationHeader.substring(7)
             try {
                 val claims: Claims = jwtUtils.decodeJWT(token)
@@ -43,14 +49,14 @@ class JWTFilter(
                     SecurityContextHolder.getContext().authentication = authentication
                 }
             } catch (e: Exception) {
-                val claims: Claims = jwtUtils.decodeJWT(token)
-
-                val email = claims.subject
-                throw UnauthorizedException(ConstantVariables.USER_UNAUTHORIZED.format(email))
+                response.status = HttpServletResponse.SC_UNAUTHORIZED
+                response.writer.write("Unauthorized: ${e.message}")
+                return
             }
         }
 
         filterChain.doFilter(request, response)
     }
 }
+
 

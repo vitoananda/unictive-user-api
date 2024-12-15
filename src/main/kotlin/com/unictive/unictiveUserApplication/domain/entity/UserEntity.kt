@@ -22,9 +22,6 @@ data class UserEntity(
     @field:Column(name = "password", columnDefinition = "varchar")
     val password: String? = null,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var hobbies: List<HobbyEntity> = mutableListOf(),
-
     @CreationTimestamp
     @Column(name = "dt_added", updatable = false, columnDefinition = "timestamp")
     val dtAdded : LocalDateTime? = null,

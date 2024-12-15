@@ -35,7 +35,7 @@ class UserController(
         return ResponseEntity.ok(res)
     }
 
-    @PostMapping()
+    @PostMapping("/create")
     fun createUser(
         @Valid @RequestBody request: ReqInsertUserDto
     ): ResponseEntity<BaseResponse<Any>> {
@@ -43,12 +43,20 @@ class UserController(
         return ResponseEntity.ok(res)
     }
 
-    @PutMapping()
+    @PutMapping("/update")
     fun updateUser(
         @Valid @RequestBody request: ReqUpdateUserDto
     ): ResponseEntity<BaseResponse<Any>> {
         val res = userService.updateUser(request)
         return ResponseEntity.ok(res)
+    }
+
+    @DeleteMapping("/delete")
+    fun deleteUser(
+        @RequestParam("idUser") idUser: Int,
+    ): ResponseEntity<BaseResponse<Any>> {
+        val response = userService.deleteUser(idUser)
+        return ResponseEntity.ok(response)
     }
 }
 

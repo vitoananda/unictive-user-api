@@ -22,16 +22,11 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("v1/api/auth/**").permitAll()
+            .requestMatchers("/v1/api/auth/**").permitAll()
             .anyRequest().authenticated()
             .and()
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java) // Add custom JWT filter
-
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
-
-    @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
-        return authConfig.authenticationManager
-    }
 }
+

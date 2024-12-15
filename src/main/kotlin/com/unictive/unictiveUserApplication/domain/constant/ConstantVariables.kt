@@ -6,5 +6,6 @@ object ConstantVariables {
     const val DATA_ALREADY_EXIST: String = "%s sudah terdaftar."
     const val INSERT_DATA_SUCCESS: String = "%s baru berhasil ditambahkan."
     const val UPDATE_DATA_SUCCESS: String = "%s berhasil diperbarui."
+    const val DELETE_DATA_SUCCESS: String = "%s berhasil dihapus"
     const val USER_UNAUTHORIZED: String = "%s unatuhorized"
 }

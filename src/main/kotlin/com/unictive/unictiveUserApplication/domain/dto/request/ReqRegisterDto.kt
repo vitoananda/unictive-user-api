@@ -1,6 +1,7 @@
 package com.unictive.unictiveUserApplication.domain.dto.request
 
-data class ReqInsertUserDto(
+data class ReqRegisterDto(
     val name: String? = null,
-    val hobby: List<String>? = null
+    val email: String? = null,
+    val password: String? = null
 )

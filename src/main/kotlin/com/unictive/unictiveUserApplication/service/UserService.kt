@@ -24,4 +24,6 @@ interface UserService {
     fun updateUser(
         request: ReqUpdateUserDto
     ): BaseResponse<Any>
+
+    fun deleteUser(userId: Int): BaseResponse<Any>
 }
