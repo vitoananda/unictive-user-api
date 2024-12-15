@@ -18,28 +18,45 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
-    <script>
+    <div id="alertContainer" class="mt-4"></div>
+</div>
+
+<script>
     async function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        const response = await fetch('/v1/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+        try {
+            const response = await fetch('/v1/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
 
-        const result = await response.json();
-        if (response.ok) {
-            localStorage.setItem('token', result.data.token);  // Menyimpan token di localStorage
-            alert('Login berhasil!');
-            window.location.href = '/v1/api/user/home';  // Arahkan ke halaman home setelah login
-        } else {
-            alert('Login gagal: ' + result.message);
+            const result = await response.json();
+
+            if (response.ok) {
+                const token = result.data.token;
+                localStorage.setItem('authToken', token);
+                window.location.href = '/v1/cms/home';
+            } else {
+                showAlert('Login gagal: ' + result.message, 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Terjadi kesalahan, silakan coba lagi.', 'danger');
         }
     }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
 </script>
-</div>
 </body>
 </html>
-

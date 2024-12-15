@@ -7,10 +7,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
-@RequestMapping("/v1/api/auth")
-class AuthViewController(
+@RequestMapping("/v1/cms")
+class CmsViewController(
     private val authService: AuthService
 ) {
 
@@ -24,6 +25,25 @@ class AuthViewController(
     fun showLoginPage(model: Model): String {
         model.addAttribute("request", ReqLoginDto())
         return "loginPage"
+    }
+
+    @GetMapping("/home")
+    fun showHomePage(): String {
+        return "userHome"
+    }
+
+    @GetMapping("/addUser")
+    fun showAddUserPage(): String {
+        return "addUserPage"
+    }
+
+    @GetMapping("/editUser")
+    fun showEditUserPage(
+        @RequestParam("idUser") idUser: Long,
+        model: Model
+    ): String {
+        model.addAttribute("idUser", idUser)
+        return "editUserPage"
     }
 }
 

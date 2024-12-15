@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Styling for table border and padding */
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table-container {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2 class="text-center">User Management</h2>
+    <div class="mb-4 text-end">
+        <button class="btn btn-primary" onclick="window.location.href='/v1/cms/addUser'">Tambah User</button>
+    </div>
+    <div class="table-container">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+            <tr>
+                <th>No</th>
+                <th>ID</th>
+                <th>Nama</th>
+                <th>Hobi</th>
+                <th>Aksi</th>
+            </tr>
+            </thead>
+            <tbody id="userTable">
+            </tbody>
+        </table>
+    </div>
+
+    <nav>
+        <ul class="pagination justify-content-between">
+            <li class="page-item" id="prevPage" onclick="changePage(-1)">
+                <a class="page-link" href="#">Previous</a>
+            </li>
+            <li class="page-item" id="nextPage" onclick="changePage(1)">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="alertContainer" class="mt-3"></div>
+</div>
+
+<script>
+    let currentPage = 1;
+    let pageSize = 10;
+    let totalRecords = 0;
+    let totalPages = 0;
+
+    async function fetchUsers() {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`/v1/api/user/list?page=${currentPage}&size=${pageSize}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const result = await response.json();
+        const userTable = document.getElementById('userTable');
+        const alertContainer = document.getElementById('alertContainer');
+
+
+        userTable.innerHTML = '';
+        alertContainer.innerHTML = '';
+
+        totalRecords = result.pagination.totalRecords;
+        totalPages = result.pagination.totalPage;
+
+        result.data.forEach((user, index) => {
+            userTable.innerHTML += `
+                <tr>
+                    <td>${(currentPage - 1) * pageSize + index + 1}</td> <!-- Serial number -->
+                    <td>${user.idUser}</td>
+                    <td>${user.name}</td>
+                    <td>${user.hobby.length > 0 ? user.hobby.join(', ') : 'Belum Ada'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editUser(${user.idUser})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(${user.idUser})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('prevPage').classList.toggle('disabled', currentPage === 1);
+        document.getElementById('nextPage').classList.toggle('disabled', currentPage === totalPages);
+    }
+
+    async function deleteUser(id) {
+        const token = localStorage.getItem('authToken');
+        await fetch(`/v1/api/user/delete?idUser=${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        showAlert('User berhasil dihapus', 'success');
+        fetchUsers();
+    }
+
+    function editUser(id) {
+        window.location.href = `/v1/cms/editUser?idUser=${id}`;
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        fetchUsers();
+    }
+
+    function confirmDelete(id) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Perhatian!</strong> Apakah Anda yakin ingin menghapus user ini?
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteUser(${id})">Hapus</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="alert" aria-label="Close">Batal</button>
+            </div>
+        `;
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
+
+    fetchUsers();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
